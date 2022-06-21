@@ -13,12 +13,6 @@ import java.util.stream.Collectors;
 
 public class NeilCompletableFuture {
 
-    public static void main(String[] args){
-
-        NeilCompletableFuture.test9();
-
-    }
-
     public static List<NetMall> list = Arrays.asList(
             new NetMall("jd"),
             new NetMall("dangdang"),
@@ -27,19 +21,21 @@ public class NeilCompletableFuture {
             new NetMall("tmall")
     );
 
-    public static List<String> getPrice(List<NetMall> list,String productName){
+    public static List<String> getPrice(List<NetMall> list, String productName) {
         return
                 list
-                .stream()
-                .map(netMall -> {
-                    return String.format(productName+" in %s price is %.2f",
-                            netMall.getNetMallName(),
-                            netMall.calcPrice(productName));
-                })
-                .collect(Collectors.toList());
-    };
+                        .stream()
+                        .map(netMall -> {
+                            return String.format(productName + " in %s price is %.2f",
+                                    netMall.getNetMallName(),
+                                    netMall.calcPrice(productName));
+                        })
+                        .collect(Collectors.toList());
+    }
 
-    public static List<String> getPriceByCompletableFuture(List<NetMall>list,String productName){
+    ;
+
+    public static List<String> getPriceByCompletableFuture(List<NetMall> list, String productName) {
 
         return
                 list
@@ -55,7 +51,7 @@ public class NeilCompletableFuture {
                         })
                         .collect(Collectors.toList())
                         .stream()
-                        .map(s->s.join())
+                        .map(s -> s.join())
                         .collect(Collectors.toList());
 
     }
@@ -112,7 +108,7 @@ public class NeilCompletableFuture {
             }
             ;
 
-            System.out.println("----1秒钟后出结果："+result);
+            System.out.println("----1秒钟后出结果：" + result);
 
             return result;
         });
@@ -127,7 +123,7 @@ public class NeilCompletableFuture {
 
         ExecutorService threadPool = Executors.newFixedThreadPool(3);
 
-        try{
+        try {
             CompletableFuture<Integer> completableFuture = CompletableFuture.supplyAsync(() -> {
 
                 System.out.println(Thread.currentThread().getName() + "---come in");
@@ -141,30 +137,30 @@ public class NeilCompletableFuture {
                 }
                 ;
 
-                System.out.println("----1秒钟后出结果："+result);
+                System.out.println("----1秒钟后出结果：" + result);
 
-                if (result>5){
-                    int i = 1/0;
+                if (result > 5) {
+                    int i = 1 / 0;
                 }
 
                 return result;
 
-            },threadPool).whenComplete((v,e)->{
+            }, threadPool).whenComplete((v, e) -> {
 
-                if (e==null){
-                    System.out.println("----计算完成，更新系统UpdateValue："+v);
+                if (e == null) {
+                    System.out.println("----计算完成，更新系统UpdateValue：" + v);
                 }
 
-            }).exceptionally(e->{
+            }).exceptionally(e -> {
                 e.printStackTrace();
-                System.out.println("异常情况："+e.getCause()+"\t"+e.getMessage());
+                System.out.println("异常情况：" + e.getCause() + "\t" + e.getMessage());
                 return null;
             });
 
             System.out.println(Thread.currentThread().getName() + "线程先去忙其他的任务");
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally{
+        } finally {
             threadPool.shutdown();
         }
 
@@ -188,35 +184,35 @@ public class NeilCompletableFuture {
 
     }
 
-    public static void test6(){
+    public static void test6() {
 
         long startTime = System.currentTimeMillis();
 
         List<String> mysqlList = getPrice(list, "mysql");
 
-        for (String element:mysqlList) {
+        for (String element : mysqlList) {
             System.out.println(element);
         }
 
         long endTime = System.currentTimeMillis();
 
-        System.out.println("-----costTime："+(endTime-startTime)+" 毫秒");
+        System.out.println("-----costTime：" + (endTime - startTime) + " 毫秒");
 
         long startTime1 = System.currentTimeMillis();
 
         List<String> mysqlList1 = getPriceByCompletableFuture(list, "mysql");
 
-        for (String element:mysqlList) {
+        for (String element : mysqlList) {
             System.out.println(element);
         }
 
         long endTime1 = System.currentTimeMillis();
 
-        System.out.println("-----costTime："+(endTime1-startTime1)+" 毫秒");
+        System.out.println("-----costTime：" + (endTime1 - startTime1) + " 毫秒");
 
     }
 
-    public static void test7(){
+    public static void test7() {
 
         final CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(() -> {
 
@@ -239,36 +235,36 @@ public class NeilCompletableFuture {
             e.printStackTrace();
         }
         System.out.println(completableFuture.getNow("xxx"));
-        System.out.println(completableFuture.complete("completeValue")+"\t"+completableFuture.join());
+        System.out.println(completableFuture.complete("completeValue") + "\t" + completableFuture.join());
 
     }
 
-    public static void test8(){
+    public static void test8() {
 
         final ExecutorService threadPool = Executors.newFixedThreadPool(3);
 
         CompletableFuture<Integer> completableFuture = CompletableFuture
                 .supplyAsync(() -> {
 
-            try {
-                TimeUnit.SECONDS.sleep(2);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            System.out.println("111");
-            return 1;
+                    try {
+                        TimeUnit.SECONDS.sleep(2);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println("111");
+                    return 1;
 
-        },threadPool)
-                .thenApply(f->{
+                }, threadPool)
+                .thenApply(f -> {
                     //int i = 1/0;
                     System.out.println("222");
-                    return f+2;
+                    return f + 2;
                 }).thenApply(f -> {
                     System.out.println("333");
-                    return f+3;
-                }).whenComplete((v,e)->{
-                    if (e==null){
-                        System.out.println("----计算结果："+v);
+                    return f + 3;
+                }).whenComplete((v, e) -> {
+                    if (e == null) {
+                        System.out.println("----计算结果：" + v);
                     }
                 }).exceptionally(e -> {
                     //e.printStackTrace();
@@ -276,12 +272,12 @@ public class NeilCompletableFuture {
                     return null;
                 });
 
-        System.out.println(Thread.currentThread().getName()+"----主线程先去忙其他任务");
+        System.out.println(Thread.currentThread().getName() + "----主线程先去忙其他任务");
         threadPool.shutdown();
 
     }
 
-    public static void test9(){
+    public static void test9() {
 
         /*
         final ExecutorService threadPool = Executors.newFixedThreadPool(3);
@@ -299,8 +295,152 @@ public class NeilCompletableFuture {
         threadPool.shutdown();
         */
 
+        System.out.println(CompletableFuture.supplyAsync(() -> "resultA").thenRun(() -> {
+        }).join());
+        System.out.println(CompletableFuture.supplyAsync(() -> "resultA").thenAccept(r -> System.out.println(r)).join());
+        System.out.println(CompletableFuture.supplyAsync(() -> "resultA").thenApply(r -> {
+            return r + "resultB";
+        }).join());
     }
 
+    public static void test10() {
+
+        ExecutorService threadPool = Executors.newFixedThreadPool(3);
+        try {
+            CompletableFuture<Void> completableFuture = CompletableFuture.supplyAsync(() -> {
+
+                try{
+                    TimeUnit.MILLISECONDS.sleep(20);
+                }catch (InterruptedException e){
+                    e.printStackTrace();
+                }
+
+                System.out.println("1号任务" + "\t" + Thread.currentThread().getName());
+                return "abcd";
+
+            },threadPool).thenRunAsync(() -> {
+
+                try{
+                    TimeUnit.MILLISECONDS.sleep(20);
+                }catch (InterruptedException e){
+                    e.printStackTrace();
+                }
+                System.out.println("2号任务" + "\t" + Thread.currentThread().getName());
+
+            }).thenRun(() -> {
+
+                try{
+                    TimeUnit.MILLISECONDS.sleep(20);
+                }catch (InterruptedException e){
+                    e.printStackTrace();
+                }
+                System.out.println("3号任务" + "\t" + Thread.currentThread().getName());
+
+            }).thenRun(() -> {
+
+                try{
+                    TimeUnit.MILLISECONDS.sleep(20);
+                }catch (InterruptedException e){
+                    e.printStackTrace();
+                }
+                System.out.println("4号任务" + "\t" + Thread.currentThread().getName());
+
+            });
+
+            System.out.println(completableFuture.get(2L, TimeUnit.SECONDS));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            threadPool.shutdown();
+        }
+
+
+    }
+
+    public static void test11(){
+
+        CompletableFuture<String> playA = CompletableFuture.supplyAsync(() -> {
+
+            System.out.println("A come in");
+            // 暂停几秒钟线程
+            try {
+                TimeUnit.SECONDS.sleep(2);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            return "playA";
+
+        });
+
+        CompletableFuture<String> playB = CompletableFuture.supplyAsync(() -> {
+
+            System.out.println("B come in");
+            // 暂停几秒钟线程
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            return "playB";
+
+        });
+
+        CompletableFuture<String> result = playA.applyToEither(playB, f -> {
+            return f + " is winner!";
+        });
+
+        System.out.println(result.join());
+
+    }
+
+    public static void test12(){
+
+        CompletableFuture<Integer> completableFuture1 = CompletableFuture.supplyAsync(() -> {
+
+            System.out.println(Thread.currentThread().getName()+"\t---启动");
+            // 暂停几秒钟线程
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            return 10;
+
+        });
+
+        CompletableFuture<Integer> completableFuture2 = CompletableFuture.supplyAsync(() -> {
+
+            System.out.println(Thread.currentThread().getName()+"\t---启动");
+            // 暂停几秒钟线程
+            try {
+                TimeUnit.SECONDS.sleep(2);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            return 20;
+
+        });
+
+        CompletableFuture<Integer> result = completableFuture1.thenCombine(completableFuture2, (x, y) -> {
+            System.out.println("---开始两个结果合并---");
+            return x + y;
+        });
+
+        System.out.println(result.join());
+
+    }
+
+
+    public static void main(String[] args) {
+
+        NeilCompletableFuture.test12();
+
+    }
 
 
 }
@@ -309,24 +449,24 @@ public class NeilCompletableFuture {
 @NoArgsConstructor
 @Data
 @Accessors(chain = true)
-class Student{
+class Student {
     private Integer id;
     private String studentName;
     private String major;
 }
 
-class NetMall{
+class NetMall {
 
     @Getter
     private String netMallName;
 
-    public NetMall(String netMallName){
+    public NetMall(String netMallName) {
 
         this.netMallName = netMallName;
 
     }
 
-    public double calcPrice(String productName){
+    public double calcPrice(String productName) {
 
         try {
             TimeUnit.SECONDS.sleep(1);
@@ -337,6 +477,8 @@ class NetMall{
         double result = ThreadLocalRandom.current().nextDouble() * 2 + productName.charAt(0);
 
         return result;
-    };
+    }
+
+    ;
 
 }
