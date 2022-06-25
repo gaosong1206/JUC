@@ -1,8 +1,8 @@
 package com.neil.threadlocal;
 
-import org.omg.CORBA.TIMEOUT;
-
-import java.lang.ref.SoftReference;
+import java.lang.ref.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -111,9 +111,71 @@ public class NeilThreadLocal {
 
     }
 
+    /**
+     * 弱引用
+     */
+    public static void test4(){
+
+        WeakReference<MyObject> weakReference = new WeakReference<>(new MyObject());
+        System.out.println("------gc before 内存够用: "+weakReference.get());
+
+        System.gc();
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("------gc after 内存够用: "+weakReference.get());
+
+    }
+
+    /**
+     * 虚引用,get方法总是返回null
+     */
+    public static void test5(){
+
+        MyObject myObject = new MyObject();
+        ReferenceQueue<MyObject> referenceQueue = new ReferenceQueue<>();
+        PhantomReference<MyObject> phantomReference = new PhantomReference<>(myObject, referenceQueue);
+
+        //System.out.println(phantomReference.get());
+
+        List<byte[]> list = new ArrayList<>();
+
+        new Thread(()->{
+            while (true){
+
+                list.add(new byte[1*1024*1024]);
+
+                try {
+                    TimeUnit.MILLISECONDS.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println(phantomReference.get()+"\t"+"list add ok");
+            }
+        },"t1").start();
+
+        new Thread(()->{
+            while (true){
+
+            Reference<? extends MyObject> reference = referenceQueue.poll();
+            if (reference != null){
+                System.out.println("有虚对象回收加入了队列");
+                break;
+            }
+
+            }
+        },"t2").start();
+
+
+    }
+
+
     public static void main(String[] args) {
 
-        NeilThreadLocal.test3();
+        NeilThreadLocal.test5();
 
     }
 
